@@ -14,7 +14,8 @@ ZUBASH（OCTBUZZ）の仕様紹介ランディングページ。
   moov アトムが先頭にあり（faststart 済み）、頭から順次再生できる。
   **解像度が低い点は把握しておくこと**（下記「動画の解像度」）。
 - `pv-poster.jpg` … PV のポスター画像（動画から抜いた実フレーム / 720×480）。
-- `tools/build.py`, `tools/kiosk_patch.py` … 素の書き出しを公開用に変換するスクリプト。
+- `tools/build.py`, `tools/kiosk_patch.py`, `tools/char_crop.py` …
+  素の書き出しを公開用に変換するスクリプト。
 - `.nojekyll` … Jekyll の処理を止めるための空ファイル。消さないこと。
 - `og-image.jpg` / `favicon.svg` … OGP・ファビコン用。
 
@@ -37,6 +38,11 @@ python3 tools/build.py <素の書き出し.html> index.html
    （タブのタイトルが空になる）。外側と `__bundler/template` 島の中、**両方**に入れる。
 2. **PV セクション**をローテーションの1枚目として挿入。
 3. **キオスクの動画対応・音声・全画面**（`tools/kiosk_patch.py`）。
+4. **キャラクターカードの切り出し位置**（`tools/char_crop.py`）。
+   書き出し時点では4体に同じ切り出しが当たっていて、頭の高さも身幅も違うため
+   **4体とも頭頂が切れていた**（丸い頭のカエルでいちばん目立つ）。
+   正面図の外接矩形を実測して計算し直してある。素材を差し替えたら
+   `tools/char_crop.py` の実測値も取り直すこと。
 
 ## キオスク（自動ローテーション）— gamescom 試遊台用
 

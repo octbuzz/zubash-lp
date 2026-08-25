@@ -66,11 +66,16 @@ def sub1(text, old, new, what):
     return text.replace(old, new, 1)
 
 
+import char_crop
 import kiosk_patch
 
 
 def patch_kiosk(tpl):
     return kiosk_patch.apply(tpl, sub1)
+
+
+def patch_char_crop(tpl):
+    return char_crop.apply(tpl, sub1)
 
 
 def main():
@@ -94,6 +99,7 @@ def main():
     assert '<html lang="en"' in tpl, "html lang が入らなかった"
 
     tpl = patch_kiosk(tpl)
+    tpl = patch_char_crop(tpl)
 
     # <script> の中に生の </ を置けないので、JSON 側の / をエスケープする。
     enc = json.dumps(tpl, ensure_ascii=False).replace("</", "<\\u002F")
