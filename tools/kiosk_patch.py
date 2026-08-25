@@ -24,6 +24,14 @@ MOUNT_NEW = """  componentDidMount() {
   }"""
 
 
+# ── 1枚あたりの表示秒数 ──────────────────────────────────────────────────
+# 書き出し時点では kioskSeconds プロパティの既定値が18秒。展示では長すぎたので半分にする。
+# props の既定値と JS 側のフォールバックの両方を書き換える（実行時に効くのは props の方）。
+SECONDS_PER_PAGE = 9
+
+PROPS_OLD = "&quot;kioskSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:18,"
+PROPS_NEW = "&quot;kioskSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:%d," % SECONDS_PER_PAGE
+
 # ── ローテーション対象 ────────────────────────────────────────────────────
 # フッターだけの1枚は無人ローテでは中身が無く、18秒の空白になるので外す。
 # （スクロール表示のページ下部にはそのまま残る）
@@ -97,8 +105,8 @@ DUR_NEW = """    // 動画フレームは動画の尺で送る。尺が取れな
     const dur = () => {
       const v = frames[i] && frames[i].el.querySelector('video');
       if (v && isFinite(v.duration) && v.duration > 0) return (v.duration + 0.5) * 1000;
-      return Math.max(4, this.props.kioskSeconds ?? 18) * 1000;
-    };"""
+      return Math.max(4, this.props.kioskSeconds ?? %d) * 1000;
+    };""" % SECONDS_PER_PAGE
 
 # ── フレーム切り替え時に動画を頭出し／停止する ────────────────────────────
 SHOWFN_OLD = """    const show = (k) => {
@@ -269,6 +277,7 @@ PV_SECTION = """<section data-screen-label="PV" style="position: relative; backg
 
 
 def apply(tpl, sub1):
+    tpl = sub1(tpl, PROPS_OLD, PROPS_NEW, "1枚あたりの表示秒数")
     tpl = sub1(tpl, MOUNT_OLD, MOUNT_NEW, "通常表示の video に操作UIを付ける")
     tpl = sub1(tpl, PAGES_OLD, PAGES_NEW, "ローテーション対象からフッターを外す")
     tpl = sub1(tpl, EXIT_OLD, EXIT_NEW, "kioskExit の後始末")
