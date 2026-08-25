@@ -9,9 +9,11 @@ ZUBASH（OCTBUZZ）の仕様紹介ランディングページ。
 
 - `index.html` … Claude Design から書き出した自己展開バンドル1枚。画像168点と
   Webフォントを base64 で内蔵。**直接編集せず `tools/build.py` で生成する**（下記）。
-- `pv.mp4` … PV。43秒 / 2160×1440 (3:2) / H.264 + AAC / 41MB。
+- `pv.mp4` … PV。43秒 / **720×480 (3:2)** / H.264 + AAC 317kbps / 17.6MB。
+  元は `Premiere/output/260610_0014_ai_music_1088_4.mp4`。
   moov アトムが先頭にあり（faststart 済み）、頭から順次再生できる。
-- `pv-poster.jpg` … PV のポスター画像（動画から抜いた実フレーム）。
+  **解像度が低い点は把握しておくこと**（下記「動画の解像度」）。
+- `pv-poster.jpg` … PV のポスター画像（動画から抜いた実フレーム / 720×480）。
 - `tools/build.py`, `tools/kiosk_patch.py` … 素の書き出しを公開用に変換するスクリプト。
 - `.nojekyll` … Jekyll の処理を止めるための空ファイル。消さないこと。
 - `og-image.jpg` / `favicon.svg` … OGP・ファビコン用。
@@ -81,12 +83,30 @@ URL に `?kiosk`（`?kiosk=1` / `?kiosk=true` も可）を付けると全画面�
   購読を解除している。解除しないと通常表示に戻ったあとも Space が `preventDefault` され、
   スペースキーでページをスクロールできなくなる。
 
+## 動画の解像度
+
+現在の `pv.mp4` は **720×480**。同じ PV の HD 版（`Premiere/output/hd_1.mp4`、
+2160×1440 / 41MB）もあるが、ファイルサイズを優先して低解像度版を採用している。
+
+**試遊台の大きい画面で全画面表示すると、相応に眠い絵になる。**
+1920×1080 のモニタなら約2.7倍（面積で約7倍）の拡大になる。
+会場のネットワークが不安な場合は軽い方が有利だが、画質を取るなら
+`hd_1.mp4` に差し替えること（3:2 で同じなので `pv.mp4` を置き換えるだけでよい。
+HTML 側の変更は不要。ポスターも HD 版から取り直すこと）。
+
+中間の解像度（1280×854 程度）を作るなら ffmpeg が要る:
+
+```
+brew install ffmpeg
+ffmpeg -i hd_1.mp4 -vf scale=1280:-2 -c:v libx264 -crf 23 -preset slow \
+       -c:a aac -b:a 192k -movflags +faststart pv.mp4
+```
+
+なお音声は低解像度版の方が良い（317kbps / HD 版は 93kbps）。
+
 ## 帯域について
 
-`pv.mp4` は41MB。GitHub Pages は1ファイル100MBまでなので置けるが、
-帯域のソフト上限が月100GB ある。通常表示では `preload="metadata"` なので
-再生しない訪問者には動画本体が転送されない。試遊台のローテーションでは
-毎周ダウンロードし直すのではなく HTTP キャッシュ（ETag）が効く。
-
-この環境に ffmpeg が無く軽量版は作っていない。作るなら `brew install ffmpeg` の上で
-1080p / 3Mbps 程度に落とすと15MB前後になる。
+GitHub Pages は1ファイル100MBまでなので余裕はあるが、帯域のソフト上限が
+月100GB ある。通常表示では `preload="metadata"` なので、再生しない訪問者には
+動画本体が転送されない。試遊台のローテーションでは毎周ダウンロードし直すのではなく
+HTTP キャッシュ（ETag）が効く。
