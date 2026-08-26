@@ -4,6 +4,7 @@ ZUBASH（OCTBUZZ）の仕様紹介ランディングページ。
 
 - 公開URL: https://octbuzz.github.io/zubash-lp/
 - **試遊台の自動ローテーション**: https://octbuzz.github.io/zubash-lp/?kiosk
+- **ネットが落ちたとき用のローカル再生**: 下記「ローカル（オフライン）で動かす」
 
 ## ファイル
 
@@ -16,6 +17,9 @@ ZUBASH（OCTBUZZ）の仕様紹介ランディングページ。
 - `pv-poster.jpg` … PV のポスター画像（動画から抜いた実フレーム / 720×480）。
 - `tools/build.py`, `tools/kiosk_patch.py`, `tools/char_crop.py` …
   素の書き出しを公開用に変換するスクリプト。
+- `kiosk.html` … `index.html?kiosk` へ飛ばすだけの入口。
+  **ダブルクリックでは file URL にクエリを付けられずローテーションが始まらない**ため、
+  「ダブルクリックできる `?kiosk`」として置いてある。
 - `.nojekyll` … Jekyll の処理を止めるための空ファイル。消さないこと。
 - `og-image.jpg` / `favicon.svg` … OGP・ファビコン用。
 
@@ -120,3 +124,41 @@ GitHub Pages は1ファイル100MBまでなので余裕はあるが、帯域の�
 月100GB ある。通常表示では `preload="metadata"` なので、再生しない訪問者には
 動画本体が転送されない。試遊台のローテーションでは毎周ダウンロードし直すのではなく
 HTTP キャッシュ（ETag）が効く。
+
+## ローカル（オフライン）で動かす
+
+会場のネットワークが落ちても動くように、このリポジトリを丸ごと手元に置いておく。
+
+```
+gh repo clone octbuzz/zubash-lp ~/Documents/OCTBUZZ/zubash-lp
+```
+
+**開くファイル:**
+
+| やりたいこと | 開くファイル |
+|---|---|
+| 試遊台の自動ローテーション | **`kiosk.html`**（ダブルクリック） |
+| 普通のページとして見る | `index.html`（ダブルクリック） |
+
+`file://` で直接開いて完全に動作することを Chrome で確認済み
+（画像21点・フォント268面・`pv.mp4` の再生・F キーでの全画面と音声解除・Esc の挙動）。
+フォントは data: URI として内蔵されているのでオフラインでも化けない。
+Google Fonts への参照は preconnect ヒントだけで、実際には取りに行かない。
+
+注意点:
+
+- `file://` で開くと Chrome のコンソールに
+  `Unsafe attempt to load URL ... 'file:' URLs are treated as unique security origins.`
+  が1件出るが、**実害は無い**（画像・フォント・動画すべて読み込めていることを確認済み）。
+  file スキームの origin 扱いに対する Chrome の通知で、対応する要素も失敗した読み込みも無い。
+- 検証は Chrome で行っている。Safari は `file://` の制限がより厳しいので、
+  **本番は Chrome を使うこと。**
+- コンソールを完全にきれいにしたい／確実を期すなら、ローカルHTTPサーバ経由でもよい:
+
+  ```
+  cd ~/Documents/OCTBUZZ/zubash-lp && python3 -m http.server 8000
+  ```
+
+  → http://localhost:8000/kiosk.html
+
+- 最新版に更新するときは `git pull` する。

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>ZUBASH — 自動ローテーション起動</title>
+<meta name="robots" content="noindex">
+<style>
+  html,body{height:100%;margin:0;background:#0E1116;color:#F4F1EA;
+    font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;}
+  main{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+  a{color:#C7F000;font-size:15px;}
+  p{opacity:.6;font-size:13px;margin:0;}
+</style>
+<script>
+  // index.html?kiosk へ飛ばすだけの入口。
+  // ダブルクリックでは file URL にクエリを付けられず自動ローテーションが始まらないため、
+  // 「ダブルクリックできる ?kiosk」としてこのファイルを置いている。
+  location.replace('index.html?kiosk');
+</script>
+</head>
+<body>
+<main>
+  <p>自動ローテーションを起動しています…</p>
+  <a href="index.html?kiosk">開かない場合はこちら</a>
+</main>
+</body>
+</html>
