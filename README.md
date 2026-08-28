@@ -42,6 +42,28 @@ python3 tools/build.py <素の書き出し.html> index.html
    （タブのタイトルが空になる）。外側と `__bundler/template` 島の中、**両方**に入れる。
 2. **PV セクション**をローテーションの1枚目として挿入。
 3. **キオスクの動画対応・音声・全画面**（`tools/kiosk_patch.py`）。
+
+## 遊び方セクション（03 — Modes）
+
+`tools/modes_section.py` で追加している。内容は octbuzz-client の実装から拾った:
+
+| | 目的表示 | クリア条件 |
+|---|---|---|
+| SOLO | `REACH THE GOAL!` | ゴールした時点でステージクリア（`soloCleared`）。届かなければ次ラウンドへ |
+| CO-OP | `EVERYONE REACH THE GOAL!` | **全員**がゴールに入った時点でステージクリア（`coopCleared`）。未ゴール者ぶんのボーナスは配らない |
+| VERSUS | `GRAB THE MOST POINTS!` | 従来どおり3ラウンドの合計点 |
+
+* 遊び方はメニューでマルチを選んだ直後の二択（`HOW DO YOU PLAY?` / 右 CO-OP・左 VERSUS）で決まる
+* 復活待ちは 10 秒（`Constants.Times.Ingame.ReviveWaitSec`）。残り秒数が各自の×印に出る
+* 目的表示はステージにつき1回、最初のラウンドだけ（`StageObjectiveBanner`）
+
+**このセクションの英文は100字以内に収めてある。** キオスクは100字超のブロックを
+画面から落とすので（`MAX_CHARS`）、超えると試遊台の画面に出なくなる。追記するときは注意。
+
+**出典は octbuzz-client の `feat/coop-and-combat-tuning` ブランチ**
+（`5f370f87` ほか計6コミット）。**2026-08-27 時点で main 未マージ・origin へも未 push。**
+仕様が変わったらこのセクションも直すこと。
+
 4. **キャラクターカードの切り出し位置**（`tools/char_crop.py`）。
    書き出し時点では4体に同じ切り出しが当たっていて、頭の高さも身幅も違うため
    **4体とも頭頂が切れていた**（丸い頭のカエルでいちばん目立つ）。
