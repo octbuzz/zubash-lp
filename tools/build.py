@@ -67,6 +67,7 @@ def sub1(text, old, new, what):
 
 
 import char_crop
+import controls_layout
 import modes_section
 import kiosk_patch
 
@@ -81,6 +82,10 @@ def patch_char_crop(tpl):
 
 def patch_modes(tpl):
     return modes_section.apply(tpl, sub1)
+
+
+def patch_controls(tpl):
+    return controls_layout.apply(tpl, sub1)
 
 
 def main():
@@ -106,6 +111,7 @@ def main():
     tpl = patch_kiosk(tpl)
     tpl = patch_char_crop(tpl)
     tpl = patch_modes(tpl)
+    tpl = patch_controls(tpl)
 
     # <script> の中に生の </ を置けないので、JSON 側の / をエスケープする。
     enc = json.dumps(tpl, ensure_ascii=False).replace("</", "<\\u002F")
